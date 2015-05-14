@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2014 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2015 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
@@ -31,57 +31,80 @@
  *
  ****************************************************************************/
 
-/**
- * @file rtl_params.c
+/*
+ * @file attitude_estimator_q_params.c
  *
- * Parameters for RTL
+ * Parameters for attitude estimator (quaternion based)
  *
- * @author Julian Oes <julian@oes.ch>
+ * @author Anton Babushkin <anton.babushkin@me.com>
  */
-
-#include <nuttx/config.h>
 
 #include <systemlib/param/param.h>
 
-/*
- * RTL parameters, accessible via MAVLink
- */
-
 /**
- * RTL altitude
+ * Complimentary filter accelerometer weight
  *
- * Altitude to fly back in RTL in meters
- *
- * @unit meters
+ * @group Attitude Q estimator
  * @min 0
- * @max 150
- * @group Return To Land
+ * @max 1
  */
-PARAM_DEFINE_FLOAT(RTL_RETURN_ALT, 60);
-
+PARAM_DEFINE_FLOAT(ATT_W_ACC, 0.2f);
 
 /**
- * RTL loiter altitude
+ * Complimentary filter magnetometer weight
  *
- * Stay at this altitude above home position after RTL descending.
- * Land (i.e. slowly descend) from this altitude if autolanding allowed.
- *
- * @unit meters
- * @min 2
- * @max 100
- * @group Return To Land
+ * @group Attitude Q estimator
+ * @min 0
+ * @max 1
  */
-PARAM_DEFINE_FLOAT(RTL_DESCEND_ALT, 30);
+PARAM_DEFINE_FLOAT(ATT_W_MAG, 0.1f);
 
 /**
- * RTL delay
+ * Complimentary filter gyroscope bias weight
  *
- * Delay after descend before landing in RTL mode.
- * If set to -1 the system will not land but loiter at NAV_LAND_ALT.
- *
- * @unit seconds
- * @min -1
- * @max 300
- * @group Return To Land
+ * @group Attitude Q estimator
+ * @min 0
+ * @max 1
  */
-PARAM_DEFINE_FLOAT(RTL_LAND_DELAY, -1.0f);
+PARAM_DEFINE_FLOAT(ATT_W_GYRO_BIAS, 0.1f);
+
+/**
+ * Magnetic declination, in degrees
+ *
+ * This parameter is not used in normal operation,
+ * as the declination is looked up based on the
+ * GPS coordinates of the vehicle.
+ *
+ * @group Attitude Q estimator
+ * @unit degrees
+ */
+PARAM_DEFINE_FLOAT(ATT_MAG_DECL, 0.0f);
+
+/**
+ * Enable automatic GPS based declination compensation
+ *
+ * @group Attitude Q estimator
+ * @min 0
+ * @max 1
+ */
+PARAM_DEFINE_INT32(ATT_MAG_DECL_A, 1);
+
+/**
+ * Enable acceleration compensation based on GPS
+ * velocity.
+ *
+ * @group Attitude Q estimator
+ * @min 1
+ * @max 2
+ */
+PARAM_DEFINE_INT32(ATT_ACC_COMP, 2);
+
+/**
+ * Gyro bias limit
+ *
+ * @group Attitude Q estimator
+ * @min 0
+ * @max 2
+ * @unit rad/s
+ */
+PARAM_DEFINE_FLOAT(ATT_BIAS_MAX, 0.05f);

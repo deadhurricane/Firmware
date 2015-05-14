@@ -397,16 +397,7 @@ int attitude_estimator_ekf_thread_main(int argc, char *argv[])
 
 					hrt_abstime vel_t = 0;
 					bool vel_valid = false;
-					if (ekf_params.acc_comp == 1 && gps.fix_type >= 3 && gps.eph < 10.0f && gps.vel_ned_valid && hrt_absolute_time() < gps.timestamp_velocity + 500000) {
-						vel_valid = true;
-						if (gps_updated) {
-							vel_t = gps.timestamp_velocity;
-							vel(0) = gps.vel_n_m_s;
-							vel(1) = gps.vel_e_m_s;
-							vel(2) = gps.vel_d_m_s;
-						}
-
-					} else if (ekf_params.acc_comp == 2 && gps.eph < 5.0f && global_pos.timestamp != 0 && hrt_absolute_time() < global_pos.timestamp + 20000) {
+					if (gps.eph < 5.0f && global_pos.timestamp != 0 && hrt_absolute_time() < global_pos.timestamp + 20000) {
 						vel_valid = true;
 						if (global_pos_updated) {
 							vel_t = global_pos.timestamp;
@@ -465,8 +456,8 @@ int attitude_estimator_ekf_thread_main(int argc, char *argv[])
 
 						math::Vector<3> v(1.0f, 0.0f, 0.4f);
 
-						math::Vector<3> vn = Rvis * v;
-
+						math::Vector<3> vn = Rvis.transposed() * v; //Rvis is Rwr (robot respect to world) while v is respect to world. Hence Rvis must be transposed having (Rwr)' * Vw
+											    // Rrw * Vw = vn. This way we have consistency
 						z_k[6] = vn(0);
 						z_k[7] = vn(1);
 						z_k[8] = vn(2);
@@ -487,8 +478,6 @@ int attitude_estimator_ekf_thread_main(int argc, char *argv[])
 						if (gps.eph < 20.0f && hrt_elapsed_time(&gps.timestamp_position) < 1000000) {
 							mag_decl = math::radians(get_mag_declination(gps.lat / 1e7f, gps.lon / 1e7f));
 
-						} else {
-							mag_decl = ekf_params.mag_decl;
 						}
 
 						/* update mag declination rotation matrix */

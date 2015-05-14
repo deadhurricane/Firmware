@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2014 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2015 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
@@ -32,56 +32,16 @@
  ****************************************************************************/
 
 /**
- * @file rtl_params.c
+ * @file esc_calibration.h
  *
- * Parameters for RTL
+ * Definition of esc calibration
  *
- * @author Julian Oes <julian@oes.ch>
+ * @author Roman Bapst <bapstr@ethz.ch>
  */
 
-#include <nuttx/config.h>
+#ifndef ESC_CALIBRATION_H_
+#define ESC_CALIBRATION_H_
+int check_if_batt_disconnected(int mavlink_fd);
+int do_esc_calibration(int mavlink_fd);
 
-#include <systemlib/param/param.h>
-
-/*
- * RTL parameters, accessible via MAVLink
- */
-
-/**
- * RTL altitude
- *
- * Altitude to fly back in RTL in meters
- *
- * @unit meters
- * @min 0
- * @max 150
- * @group Return To Land
- */
-PARAM_DEFINE_FLOAT(RTL_RETURN_ALT, 60);
-
-
-/**
- * RTL loiter altitude
- *
- * Stay at this altitude above home position after RTL descending.
- * Land (i.e. slowly descend) from this altitude if autolanding allowed.
- *
- * @unit meters
- * @min 2
- * @max 100
- * @group Return To Land
- */
-PARAM_DEFINE_FLOAT(RTL_DESCEND_ALT, 30);
-
-/**
- * RTL delay
- *
- * Delay after descend before landing in RTL mode.
- * If set to -1 the system will not land but loiter at NAV_LAND_ALT.
- *
- * @unit seconds
- * @min -1
- * @max 300
- * @group Return To Land
- */
-PARAM_DEFINE_FLOAT(RTL_LAND_DELAY, -1.0f);
+#endif
